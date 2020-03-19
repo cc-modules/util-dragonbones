@@ -20,7 +20,7 @@ export default {
         if (key.match(/^\$|[0-9_]$/)) return;
         const newKey = `${prefix}${key}`;
         if (typeof node[newKey] !== 'undefined') {
-          console.warn(`${newKye} already defined on node. Consider using $inject(..., prefix)`);
+          console.warn(`${newKey} already defined on node. Consider using $inject(..., prefix)`);
         } else {
           node[newKey] = this[key].bind(node, node);
         }
