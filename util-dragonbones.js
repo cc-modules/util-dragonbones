@@ -44,6 +44,7 @@ export default {
       nodes = [nodes];
     }
     nodes.forEach((node) => {
+      if (node && node.__$injected$dragonbones) return;
       Object.keys(this).forEach(key => {
         if (key.match(/^\$|[0-9_]$/)) return;
         const newKey = `${prefix}${key}`;
@@ -53,6 +54,7 @@ export default {
           node[newKey] = this[key].bind(node, node);
         }
       });
+      node.__$injected$dragonbones = true;
     });
   }
 };
