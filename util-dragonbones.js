@@ -38,7 +38,7 @@ function verbalize(node, anims) {
 
 export default {
   playAnimation: playAnimation,
-  $verbolize: verbalize,
+  $verbalize: verbalize,
   $inject(nodes, prefix = '') {
     if (!Array.isArray(nodes) && cc.Node.isNode(nodes)) {
       nodes = [nodes];
