@@ -1,10 +1,11 @@
-function playAnimation(node, anim, playTimes = 1, nextAnim) {
+function playAnimation(node, anim, playTimes = 1, ...args) {
   const armatureDispaly = node.getComponent(dragonBones.ArmatureDisplay);
   return new Promise((rs) => {
     armatureDispaly.playAnimation(anim, playTimes);
     armatureDispaly.once('complete', (event) => {
-      if (nextAnim) {
-        rs(armatureDispaly.playAnimation(nextAnim));
+      if (args && args.length) {
+        // rs(armatureDispaly.playAnimation(nextAnim));
+        rs(playAnimation(node,...args));
       } else {
         rs(event);
       }
@@ -12,14 +13,28 @@ function playAnimation(node, anim, playTimes = 1, nextAnim) {
   });
 }
 
+function doVerbalize(node, method, anim) {
+  if (Array.isArray(anim)){
+    const [ani, ..._args] = anim;
+    node[method] = function (...args) {
+      return playAnimation(node, ani, ..._args.concat(args));
+    };
+  } else {
+    node[method] = function (...args) {
+      return playAnimation(node, anim, ...args);
+    };
+  }
+}
+
 function verbalize(node, anims) {
   const nodes = Array.isArray(node) ? node : [node];
   if (Array.isArray(anims)) {
     anims.forEach(anim => {
       nodes.forEach(node => {
-        node[anim] = function (...args) {
-          return playAnimation(node, anim, ...args);
-        };
+        doVerbalize(node, anim, anim);
+        // node[anim] = function (...args) {
+        //   return playAnimation(node, anim, ...args);
+        // };
       });
     });
   } else {
@@ -27,9 +42,10 @@ function verbalize(node, anims) {
       nodes.forEach(node => {
         const method = alias;
         const anim = anims[method];
-        node[method] = function (...args) {
-          return playAnimation(node, anim, ...args);
-        };
+        doVerbalize(node, method, anim);
+        // node[method] = function (...args) {
+        //   return playAnimation(node, anim, ...args);
+        // };
       });
     }
   }
